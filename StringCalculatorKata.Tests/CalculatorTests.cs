@@ -72,5 +72,23 @@ namespace StringCalculatorKata.Tests
         {
             Assert.That(calc.Compute("9+2*8-1"), Is.EqualTo(24));
         }
+
+        [Test]
+        public void GivenSimpleDivision_ShouldBeDividedAgainstItselfYetSomehowStand()
+        {
+            Assert.That(calc.Compute("8/2"), Is.EqualTo(4));
+        }
+
+        [Test]
+        public void GivenThreeNumbersToDivide_ShouldBeDividedAgainstItselfYetSomehowStand()
+        {
+            Assert.That(calc.Compute("8/2/2"), Is.EqualTo(2));
+        }
+
+        [Test]
+        public void GivenSomeNumbersWithNegatives_OperationsMustBeMet()
+        {
+            Assert.That(calc.Compute("8+-2--3/3"), Is.EqualTo(7));
+        }
     }
 }

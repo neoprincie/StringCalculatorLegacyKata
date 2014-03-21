@@ -8,62 +8,64 @@ namespace StringCalculatorKata.Core
 {
     public class ParsingCalculator
     {
-        private List<String> expressionList;
+        private const String ADD = "+";
+        private const String DIVIDE = "/";
+        private const String SUBTRACT = "-";
+        private const String MULTIPLY = "*";
+        private List<String> expressionList = new List<String>();
 
         public Double Compute(String expression)
         {
             expressionList = ParseExpression(expression);
 
-            var result = EvaluateExpression(expressionList);
-
-            return result;
+            return EvaluateExpression();
         }
 
-        private Double EvaluateExpression(List<String> expressionList)
+        private Double EvaluateExpression()
         {
-            expressionList = PerformAnyMultiplication(expressionList);
+            PerformSpecifiedOperation(MULTIPLY);
+            PerformSpecifiedOperation(DIVIDE);
 
-            //expressionList = PerformAnyDivision(expressionList);
-
-            if (expressionList.Count() < 2)
+            if (expressionList.Count() == 1)
                 return Convert.ToDouble(expressionList[0]);
 
-            var result = PerformAnyAdditionAndSubtraction(expressionList);
-
-            return result;
+            return PerformAnyAdditionAndSubtraction(expressionList);
         }
-        private static List<String> PerformAnyMultiplication(List<String> expressionList)
+
+        private void PerformSpecifiedOperation(String operation)
         {
-            var location = expressionList.IndexOf("*");
+            var location = expressionList.IndexOf(operation);
 
             while (location != -1)
             {
-                expressionList[location - 1] = MultiplyStrings(expressionList, location);
+                expressionList[location - 1] = InvokeOperation(expressionList, location, operation);
 
                 expressionList.RemoveAt(location + 1);
                 expressionList.RemoveAt(location);
 
-                location = expressionList.IndexOf("*");
+                location = expressionList.IndexOf(operation);
             }
 
-            return expressionList;
         }
 
-        private static String MultiplyStrings(List<String> expressionList, Int32 location)
+        private String InvokeOperation(List<String> expressionList, Int32 location, String operation)
         {
-            return Convert.ToString(Convert.ToDouble(expressionList[location - 1]) * Convert.ToDouble(expressionList[location + 1]));
+            if (operation == DIVIDE)
+                return Convert.ToString(Convert.ToDouble(expressionList[location - 1]) / Convert.ToDouble(expressionList[location + 1]));
+            else
+                return Convert.ToString(Convert.ToDouble(expressionList[location - 1]) * Convert.ToDouble(expressionList[location + 1]));
         }
 
-        private static Double PerformAnyAdditionAndSubtraction(List<String> expressionList)
+        private Double PerformAnyAdditionAndSubtraction(List<String> expressionList)
         {
             var results = Convert.ToDouble(expressionList[0]);
 
             while (expressionList.Count > 1)
             {
-                if (expressionList[1].Equals("+"))
+                if (expressionList[1].Equals(ADD))
                     results += Convert.ToDouble(expressionList[2]);
-                else if (expressionList[1].Equals("-"))
-                    results += Convert.ToDouble(String.Format("{0}{1}", "-", expressionList[2]));
+                else if (expressionList[1].Equals(SUBTRACT))
+                    results -= Convert.ToDouble(expressionList[2]);
 
                 expressionList.RemoveAt(2);
                 expressionList.RemoveAt(1);
@@ -75,29 +77,40 @@ namespace StringCalculatorKata.Core
 
         private List<String> ParseExpression(String expression)
         {
-            var expressionList = new List<String>();
-
             var currentPart = new StringBuilder();
+            expressionList = new List<string>();
 
-            foreach (var character in expression)
+            for (var i = 0; i < expression.Length; i++)
             {
-                if (character.Equals('+') || character.Equals('-') || character.Equals('*') || character.Equals('/'))
+                if (IsOperator(expression, i))
                 {
-                    expressionList.Add(currentPart.ToString());
-                    expressionList.Add(Convert.ToString(character));
-                    currentPart.Clear();
+                    if (IsOperator(expression, i - 1))
+                        currentPart.Append(expression[i]);
+                    else
+                    {
+                        expressionList.Add(currentPart.ToString());
+                        expressionList.Add(Convert.ToString(expression[i]));
+                        currentPart.Clear();
+                    }
                 }
                 else
                 {
-                    currentPart.Append(character);
+                    currentPart.Append(expression[i]);
                 }
             }
 
             if (currentPart.Length > 0)
                 expressionList.Add(currentPart.ToString());
 
-
             return expressionList;
+        }
+
+        private static bool IsOperator(String expression, int i)
+        {
+            return expression[i].Equals(Convert.ToChar(ADD)) ||
+                                expression[i].Equals(Convert.ToChar(SUBTRACT)) ||
+                                expression[i].Equals(Convert.ToChar(MULTIPLY)) ||
+                                expression[i].Equals(Convert.ToChar(DIVIDE));
         }
     }
 }
