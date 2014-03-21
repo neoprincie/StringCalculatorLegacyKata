@@ -11,12 +11,12 @@ namespace StringCalculatorKata.Tests
     [TestFixture]
     public class CalculatorTests
     {
-        Calculator calc;
+        private ParsingCalculator calc;
 
         [SetUp]
         public void SetUp()
         {
-            calc = new Calculator();
+            calc = new ParsingCalculator();
         }
 
         [Test]
