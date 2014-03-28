@@ -12,6 +12,7 @@ namespace StringCalculatorKata.Core
         private const String DIVIDE = "/";
         private const String SUBTRACT = "-";
         private const String MULTIPLY = "*";
+        private const String MODULUS = "%";
         private List<String> expressionList = new List<String>();
 
         public Double Compute(String expression)
@@ -25,6 +26,7 @@ namespace StringCalculatorKata.Core
         {
             PerformSpecifiedOperation(MULTIPLY);
             PerformSpecifiedOperation(DIVIDE);
+            PerformSpecifiedOperation(MODULUS);
 
             if (expressionList.Count() == 1)
                 return Convert.ToDouble(expressionList[0]);
@@ -45,15 +47,16 @@ namespace StringCalculatorKata.Core
 
                 location = expressionList.IndexOf(operation);
             }
-
         }
 
         private String InvokeOperation(List<String> expressionList, Int32 location, String operation)
         {
             if (operation == DIVIDE)
                 return Convert.ToString(Convert.ToDouble(expressionList[location - 1]) / Convert.ToDouble(expressionList[location + 1]));
-            else
+            else if (operation == MULTIPLY)
                 return Convert.ToString(Convert.ToDouble(expressionList[location - 1]) * Convert.ToDouble(expressionList[location + 1]));
+            else
+                return Convert.ToString(Convert.ToDouble(expressionList[location - 1]) % Convert.ToDouble(expressionList[location + 1]));
         }
 
         private Double PerformAnyAdditionAndSubtraction(List<String> expressionList)
@@ -78,7 +81,7 @@ namespace StringCalculatorKata.Core
         private List<String> ParseExpression(String expression)
         {
             var currentPart = new StringBuilder();
-            expressionList = new List<string>();
+            expressionList = new List<String>();
 
             for (var i = 0; i < expression.Length; i++)
             {
@@ -105,12 +108,13 @@ namespace StringCalculatorKata.Core
             return expressionList;
         }
 
-        private static bool IsOperator(String expression, int i)
+        private static bool IsOperator(String expression, Int32 i)
         {
             return expression[i].Equals(Convert.ToChar(ADD)) ||
                                 expression[i].Equals(Convert.ToChar(SUBTRACT)) ||
                                 expression[i].Equals(Convert.ToChar(MULTIPLY)) ||
-                                expression[i].Equals(Convert.ToChar(DIVIDE));
+                                expression[i].Equals(Convert.ToChar(DIVIDE)) ||
+                                expression[i].Equals(Convert.ToChar(MODULUS));
         }
     }
 }

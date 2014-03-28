@@ -1,10 +1,6 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 using StringCalculatorKata.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StringCalculatorKata.Tests
 {
@@ -25,70 +21,51 @@ namespace StringCalculatorKata.Tests
             Assert.That(calc.Compute("7"), Is.EqualTo(7.0));
         }
 
-        [Test]
-        public void GivenSimpleAddition_ShouldAddThoseNumbers()
+        [TestCase("7+3", 10)]
+        [TestCase("7+3+1", 11)]
+        public void TestAddition(String expression, Double expected)
         {
-            Assert.That(calc.Compute("7+3"), Is.EqualTo(10.0));
+            Assert.That(calc.Compute(expression), Is.EqualTo(expected));
         }
 
-        [Test]
-        public void GivenThreeNumbersToAdd_ShouldAddThoseNumbers()
+        [TestCase("7-3", 4)]
+        [TestCase("7-3-2", 2)]
+        public void TestSubtraction(String expression, Double expected)
         {
-            Assert.That(calc.Compute("7+3+1"), Is.EqualTo(11));
+            Assert.That(calc.Compute(expression), Is.EqualTo(expected));
         }
 
-        [Test]
-        public void GivenSimpleSubtraction_ShouldSubtractThoseNumbers()
+        [TestCase("9+3-2-2", 8)]
+        [TestCase("9+2*8-1", 24)]
+        public void TestMultipleOperators(String expression, Double expected)
         {
-            Assert.That(calc.Compute("7-3"), Is.EqualTo(4));
+            Assert.That(calc.Compute(expression), Is.EqualTo(expected));
         }
 
-        [Test]
-        public void GivenThreeNumbersToSubtract_ShouldSubtractThoseNumbers()
+        [TestCase("9*2", 18)]
+        [TestCase("9*2*10", 180)]
+        public void TestMultiplication(String expression, Double expected)
         {
-            Assert.That(calc.Compute("7-3-2"), Is.EqualTo(2));
+            Assert.That(calc.Compute(expression), Is.EqualTo(expected));
         }
 
-        [Test]
-        public void GivenThreeNumbersWithTwoOperators_ShouldProperlyAddAndSubtract()
+        [TestCase("8/2", 4)]
+        [TestCase("8/2/2", 2)]
+        public void TestDivision(String expression, Double expected)
         {
-            Assert.That(calc.Compute("9+3-2-2"), Is.EqualTo(8));
-        }
-
-        [Test]
-        public void GivenSimpleMultiplication_ShouldBeFruitfulAndMultiply()
-        {
-            Assert.That(calc.Compute("9*2"), Is.EqualTo(18));
-        }
-
-        [Test]
-        public void GivenThreeNumbersToMultiply_ShouldBeFruitfulAndMultiply()
-        {
-            Assert.That(calc.Compute("9*2*10"), Is.EqualTo(180));
-        }
-
-        [Test]
-        public void GivenFourNumbersWithAddSubtractAndMultiply_ShouldOperateInOrder()
-        {
-            Assert.That(calc.Compute("9+2*8-1"), Is.EqualTo(24));
-        }
-
-        [Test]
-        public void GivenSimpleDivision_ShouldBeDividedAgainstItselfYetSomehowStand()
-        {
-            Assert.That(calc.Compute("8/2"), Is.EqualTo(4));
-        }
-
-        [Test]
-        public void GivenThreeNumbersToDivide_ShouldBeDividedAgainstItselfYetSomehowStand()
-        {
-            Assert.That(calc.Compute("8/2/2"), Is.EqualTo(2));
+            Assert.That(calc.Compute(expression), Is.EqualTo(expected));
         }
 
         [Test]
         public void GivenSomeNumbersWithNegatives_OperationsMustBeMet()
         {
             Assert.That(calc.Compute("8+-2--3/3"), Is.EqualTo(7));
+        }
+
+        [TestCase("2%2", 0)]
+        public void TestModulus(String expression, Double expected)
+        {
+            Assert.That(calc.Compute(expression), Is.EqualTo(expected));
         }
     }
 }
