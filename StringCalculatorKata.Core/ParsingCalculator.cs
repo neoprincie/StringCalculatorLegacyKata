@@ -85,13 +85,15 @@ namespace StringCalculatorKata.Core
 
             for (var i = 0; i < expression.Length; i++)
             {
-                if (IsOperator(expression, i))
+                if (IsOperator(expression[i]))
                 {
-                    if (IsOperator(expression, i - 1))
+                    if (IsOperator(expression[i - 1]))
+                    {
                         currentPart.Append(expression[i]);
+                    }
                     else
                     {
-                        expressionList.Add(currentPart.ToString());
+                        expressionList.Add(Convert.ToString(currentPart));
                         expressionList.Add(Convert.ToString(expression[i]));
                         currentPart.Clear();
                     }
@@ -108,13 +110,13 @@ namespace StringCalculatorKata.Core
             return expressionList;
         }
 
-        private static bool IsOperator(String expression, Int32 i)
+        private Boolean IsOperator(Char expression)
         {
-            return expression[i].Equals(Convert.ToChar(ADD)) ||
-                                expression[i].Equals(Convert.ToChar(SUBTRACT)) ||
-                                expression[i].Equals(Convert.ToChar(MULTIPLY)) ||
-                                expression[i].Equals(Convert.ToChar(DIVIDE)) ||
-                                expression[i].Equals(Convert.ToChar(MODULUS));
+            return expression.Equals(Convert.ToChar(ADD)) ||
+                        expression.Equals(Convert.ToChar(SUBTRACT)) ||
+                        expression.Equals(Convert.ToChar(MULTIPLY)) ||
+                        expression.Equals(Convert.ToChar(DIVIDE)) ||
+                        expression.Equals(Convert.ToChar(MODULUS));
         }
     }
 }
