@@ -63,9 +63,34 @@ namespace StringCalculatorKata.Tests
         }
 
         [TestCase("2%2", 0)]
+        [TestCase("5%4", 1)]
         public void TestModulus(String expression, Double expected)
         {
             Assert.That(calc.Compute(expression), Is.EqualTo(expected));
+        }
+
+        [TestCase("2^2", 4)]
+        [TestCase("2^2^2", 16)]
+        [TestCase("2^8", 256)]
+        public void TestExponent(String expression, Double expected)
+        {
+            Assert.That(calc.Compute(expression), Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void TestOneDice()
+        {
+            var result = calc.Compute("1d10");
+            Assert.That(result >= 1, Is.True);
+            Assert.That(result <= 10, Is.True);
+        }
+
+        [Test]
+        public void TestTwoDice()
+        {
+            var result = calc.Compute("2d10");
+            Assert.That(result >= 1, Is.True);
+            Assert.That(result <= 20, Is.True);
         }
     }
 }

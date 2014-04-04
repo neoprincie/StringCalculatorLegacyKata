@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace StringCalculatorKata.Core
 {
@@ -13,6 +12,9 @@ namespace StringCalculatorKata.Core
         private const String SUBTRACT = "-";
         private const String MULTIPLY = "*";
         private const String MODULUS = "%";
+        private const String EXPONENT = "^";
+        private const String DICEROll = "d";
+        private List<String> operations = new List<String> { DICEROll, EXPONENT, MODULUS, DIVIDE, MULTIPLY, ADD, SUBTRACT };
         private List<String> expressionList = new List<String>();
 
         public Double Compute(String expression)
@@ -22,16 +24,42 @@ namespace StringCalculatorKata.Core
             return EvaluateExpression();
         }
 
+        private List<String> ParseExpression(String expression)
+        {
+            var currentNumber = new StringBuilder();
+            expressionList = new List<String>();
+
+            for (var i = 0; i < expression.Length; i++)
+            {
+                if (IsSingleOperator(expression, i))
+                {
+                    expressionList.Add(Convert.ToString(currentNumber));
+                    expressionList.Add(Convert.ToString(expression[i]));
+                    currentNumber.Clear();
+                }
+                else
+                {
+                    currentNumber.Append(expression[i]);
+                }
+            }
+
+            if (currentNumber.Length > 0)
+                expressionList.Add(currentNumber.ToString());
+
+            return expressionList;
+        }
+        
+        private Boolean IsSingleOperator(String expression, Int32 i)
+        {
+            return IsOperator(expression[i]) && !IsOperator(expression[i - 1]);
+        }
+        
         private Double EvaluateExpression()
         {
-            PerformSpecifiedOperation(MULTIPLY);
-            PerformSpecifiedOperation(DIVIDE);
-            PerformSpecifiedOperation(MODULUS);
+            foreach (var operation in operations)
+                PerformSpecifiedOperation(operation);
 
-            if (expressionList.Count() == 1)
-                return Convert.ToDouble(expressionList[0]);
-
-            return PerformAnyAdditionAndSubtraction(expressionList);
+            return Convert.ToDouble(expressionList[0]);
         }
 
         private void PerformSpecifiedOperation(String operation)
@@ -51,63 +79,36 @@ namespace StringCalculatorKata.Core
 
         private String InvokeOperation(List<String> expressionList, Int32 location, String operation)
         {
+            var leftOperand = Convert.ToDouble(expressionList[location - 1]);
+            var rightOperand = Convert.ToDouble(expressionList[location + 1]);
+
+            if (operation == DICEROll)
+                return RollDice(leftOperand, rightOperand);
+            if (operation == EXPONENT)
+                return Convert.ToString(Math.Pow(leftOperand, rightOperand));
             if (operation == DIVIDE)
-                return Convert.ToString(Convert.ToDouble(expressionList[location - 1]) / Convert.ToDouble(expressionList[location + 1]));
-            else if (operation == MULTIPLY)
-                return Convert.ToString(Convert.ToDouble(expressionList[location - 1]) * Convert.ToDouble(expressionList[location + 1]));
-            else
-                return Convert.ToString(Convert.ToDouble(expressionList[location - 1]) % Convert.ToDouble(expressionList[location + 1]));
+                return Convert.ToString(leftOperand / rightOperand);
+            if (operation == MULTIPLY)
+                return Convert.ToString(leftOperand * rightOperand);
+            if (operation == MODULUS)
+                return Convert.ToString(leftOperand % rightOperand);
+            if (operation == ADD)
+                return Convert.ToString(leftOperand + rightOperand);
+
+            return Convert.ToString(leftOperand - rightOperand);
+
         }
 
-        private Double PerformAnyAdditionAndSubtraction(List<String> expressionList)
+        private String RollDice(Double leftOperand, Double rightOperand)
         {
-            var results = Convert.ToDouble(expressionList[0]);
+            var random = new Random();
+            var counter = 0;
 
-            while (expressionList.Count > 1)
-            {
-                if (expressionList[1].Equals(ADD))
-                    results += Convert.ToDouble(expressionList[2]);
-                else if (expressionList[1].Equals(SUBTRACT))
-                    results -= Convert.ToDouble(expressionList[2]);
+            for (int i = 0; i < leftOperand; i++)
+                counter += random.Next(1, (Int32)rightOperand);
 
-                expressionList.RemoveAt(2);
-                expressionList.RemoveAt(1);
-                expressionList[0] = Convert.ToString(results);
-            }
+            return Convert.ToString(counter);
 
-            return results;
-        }
-
-        private List<String> ParseExpression(String expression)
-        {
-            var currentPart = new StringBuilder();
-            expressionList = new List<String>();
-
-            for (var i = 0; i < expression.Length; i++)
-            {
-                if (IsOperator(expression[i]))
-                {
-                    if (IsOperator(expression[i - 1]))
-                    {
-                        currentPart.Append(expression[i]);
-                    }
-                    else
-                    {
-                        expressionList.Add(Convert.ToString(currentPart));
-                        expressionList.Add(Convert.ToString(expression[i]));
-                        currentPart.Clear();
-                    }
-                }
-                else
-                {
-                    currentPart.Append(expression[i]);
-                }
-            }
-
-            if (currentPart.Length > 0)
-                expressionList.Add(currentPart.ToString());
-
-            return expressionList;
         }
 
         private Boolean IsOperator(Char expression)
@@ -116,7 +117,9 @@ namespace StringCalculatorKata.Core
                         expression.Equals(Convert.ToChar(SUBTRACT)) ||
                         expression.Equals(Convert.ToChar(MULTIPLY)) ||
                         expression.Equals(Convert.ToChar(DIVIDE)) ||
-                        expression.Equals(Convert.ToChar(MODULUS));
+                        expression.Equals(Convert.ToChar(MODULUS)) ||
+                        expression.Equals(Convert.ToChar(EXPONENT)) || 
+                        expression.Equals(Convert.ToChar(DICEROll));
         }
     }
 }
